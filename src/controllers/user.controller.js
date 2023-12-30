@@ -20,11 +20,11 @@ const registerUser = asyncHandler(async (req, res) => {
     */
 
     // checking all the fields are non empty
-    const { fullname, username, email, password } = req.body;
-    console.log(fullname, email, username, password);
+    const { fullName, username, email, password } = req.body;
+    console.log(fullName, email, username, password);
 
     if (
-        [fullname, email, username, password].some(
+        [fullName, email, username, password].some(
             (field) => field?.trim() === ""
         )
     ) {
@@ -32,17 +32,28 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // checking if the user is already exists
-    const existedUser = User.findOne({
-        // $or is a mongoDB special variable 
+    const existedUser = await User.findOne({
+        // $or is a mongoDB special variable
         $or: [{ username }, { email }],
     });
 
     if (existedUser) {
         throw new ApiError(409, "username or email is already exists ");
     }
+
+    // console.log(req.files);
     // checking for the image files
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path;
+
+    let coverImageLocalPath;
+    if (
+        req.files &&
+        Array.isArray(req.files.coverImage) &&
+        req.files.coverImage.lenghth > 0
+    ) {
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }
 
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar file is required");
@@ -58,7 +69,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
     // insertiong to the DB
     const user = await User.create({
-        fullname,
+        fullName,
         avatar: avatar.url,
         coverImage: cover?.url || "",
         email,
@@ -72,6 +83,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!createdUserCheck) {
         throw new ApiError(500, "Something went wrong while creating a user");
     }
+    // returning the response
     return res
         .status(201)
         .json(
@@ -80,3 +92,30 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 export { registerUser };
+
+// [Object: null prototype] {
+//     avatar: [
+//       {
+//         fieldname: 'avatar',
+//         originalname: 'profile-pic.png',
+//         encoding: '7bit',
+//         mimetype: 'image/png',
+//         destination: './public/temp',
+//         filename: 'profile-pic.png',
+//         path: 'public\\temp\\profile-pic.png',
+//         size: 303777
+//       }
+//     ],
+//     coverImage: [
+//       {
+//         fieldname: 'coverImage',
+//         originalname: 'Collage_id.jpg',
+//         encoding: '7bit',
+//         mimetype: 'image/jpeg',
+//         destination: './public/temp',
+//         filename: 'Collage_id.jpg',
+//         path: 'public\\temp\\Collage_id.jpg',
+//         size: 193519
+//       }
+//     ]
+//   }
