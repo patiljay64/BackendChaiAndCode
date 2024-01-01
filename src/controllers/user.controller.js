@@ -15,7 +15,6 @@ const generateAccessAndRefreshToken = async (userId) => {
         await user.save({ validateBeforeSave: false });
 
         return { accessToken, refreshToken };
-        
     } catch (error) {
         throw new ApiError(500, "Something went wrong while generating token");
     }
@@ -67,7 +66,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if (
         req.files &&
         Array.isArray(req.files.coverImage) &&
-        req.files.coverImage.lenghth > 0
+        req.files.coverImage.length > 0
     ) {
         coverImageLocalPath = req.files.coverImage[0].path;
     }
