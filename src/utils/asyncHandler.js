@@ -6,16 +6,15 @@ by catching errors and sending a standardized JSON response.
 */
 const asyncHandler = (requestHandler) => {
     return (req, res, next) => {
-        Promise.resolve(requestHandler(req, res, next))
-            .catch((error) => { next(error) })
-    }
-}
+        Promise.resolve(requestHandler(req, res, next)).catch((error) => {
+            next(error);
+        });
+    };
+};
 
-
-export { asyncHandler }
+export { asyncHandler };
 
 // Another Apporach
-
 
 // const asyncHandler = (fn) => async (req, res, next) => {
 //     try {

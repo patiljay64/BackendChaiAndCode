@@ -4,7 +4,7 @@ import cors from "cors";
 
 const app = express();
 
-// Configurations
+// Configurations and middlwares
 
 app.use(
     cors({

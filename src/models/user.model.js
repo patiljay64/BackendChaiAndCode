@@ -50,8 +50,10 @@ const userSchema = new mongoose.Schema(
 );
 
 // mongoose hooks act as middleware {just before saving the data into MONGO}
+
 userSchema.pre("save", async function (next) {
     // only if password is modified else do nothing
+
     if (!this.isModified("password")) return next();
 
     this.password = await bcrypt.hash(this.password, 10);
@@ -60,11 +62,13 @@ userSchema.pre("save", async function (next) {
 
 // custom Methods
 //Checking if password is correct or not {Entered by User in password field}
+
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
 
 // Generate Access token
+
 userSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
@@ -79,6 +83,7 @@ userSchema.methods.generateAccessToken = function () {
         }
     );
 };
+
 // Generate Refresh Token
 userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(

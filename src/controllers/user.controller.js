@@ -21,20 +21,6 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-    /* 
-    get user the data into fields
-    check the fileds are non empty
-    check the user is already registered {email, username}
-    check for images{iamges, avatar}
-    check for the password and other fields is in the requried format
-    upload to the cloudinary{avatar}
-    create user object 
-    user data is properly feed into the db
-    remove password and refresh token field from the response
-    check for user creation 
-    return res
-    */
-
     // checking all the fields are non empty
     const { fullName, username, email, password } = req.body;
     console.log(fullName, email, username, password);
@@ -83,6 +69,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!avatar) {
         throw new ApiError(400, "Avatar file is required");
     }
+
     // insertiong to the DB
     const user = await User.create({
         fullName,
@@ -92,6 +79,7 @@ const registerUser = asyncHandler(async (req, res) => {
         password,
         username: username.toLowerCase(),
     });
+
     // checking the user is created or not
     const createdUserCheck = await User.findById(user._id).select(
         "-password -refreshToken"
@@ -99,6 +87,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!createdUserCheck) {
         throw new ApiError(500, "Something went wrong while creating a user");
     }
+
     // returning the response
     return res
         .status(201)
@@ -108,15 +97,6 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-    /* 
-     req body → data
-    username or email
-    find the user
-    password check
-    access and referesh token
-    send cookie
-    */
-
     const { email, password, username } = req.body;
     if (!(username || email)) {
         throw new ApiError(400, "Username or email is required");
@@ -189,30 +169,3 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 export { registerUser, loginUser, logoutUser };
-
-// [Object: null prototype] {
-//     avatar: [
-//       {
-//         fieldname: 'avatar',
-//         originalname: 'profile-pic.png',
-//         encoding: '7bit',
-//         mimetype: 'image/png',
-//         destination: './public/temp',
-//         filename: 'profile-pic.png',
-//         path: 'public\\temp\\profile-pic.png',
-//         size: 303777
-//       }
-//     ],
-//     coverImage: [
-//       {
-//         fieldname: 'coverImage',
-//         originalname: 'Collage_id.jpg',
-//         encoding: '7bit',
-//         mimetype: 'image/jpeg',
-//         destination: './public/temp',
-//         filename: 'Collage_id.jpg',
-//         path: 'public\\temp\\Collage_id.jpg',
-//         size: 193519
-//       }
-//     ]
-//   }
