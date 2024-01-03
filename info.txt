@@ -1,0 +1,26 @@
+Database used: MongoDB Atlas (Remote Server);
+Storage used: Cloudinary   
+    
+    API End Point  
+main: http://localhost:3000/api/v1/
+
+    user authenticate
+http://localhost:3000/api/v1/register
+http://localhost:3000/api/v1/login
+http://localhost:3000/api/v1/logout
+
+    refresh token and access token
+
+these tokens are used for login or authentication
+so that once the user logged in then user dont need to provide '
+the email or username and password for varification
+
+access token are for the short time of period like {1d, some hr}
+after it expires the user will get the another access token by verifying
+there refresh token.
+
+the Refresh token is for long time of period
+and saved to the both user and database.
+by accessing tokens from cookies of logged in user the new tokens
+are generated and saved to the DB for authenticate
+
