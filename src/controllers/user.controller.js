@@ -172,7 +172,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken =
-        req.cookie.refreshToken || req.body.refreshToken;
+        req.cookies.refreshToken || req.body.refreshToken;
 
     if (!incomingRefreshToken) {
         throw new ApiError(401, "Unauthorized request");
@@ -316,7 +316,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         );
 });
 
-const getUSerChannalProfile = asyncHandler(async (req, res) => {
+const getUserChannalProfile = asyncHandler(async (req, res) => {
     const { username } = req.params;
 
     if (!username?.trim()) {
@@ -468,6 +468,6 @@ export {
     updateAccountDetails,
     updateUserAvatar,
     updateUserCoverImage,
-    getUSerChannalProfile,
+    getUserChannalProfile,
     getWatchHistory,
 };
