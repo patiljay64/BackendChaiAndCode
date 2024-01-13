@@ -315,6 +315,87 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         );
 });
 
+const getUSerChannalProfile = asyncHandler(async (req, res) => {
+    const { username } = req.params;
+
+    if (!username?.trim()) {
+        throw new ApiError(400, "Username is missing");
+    }
+
+    const channal = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase(),
+            },
+        },
+        // count how many subs the channal have
+        {
+            $lookup: {
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "channal",
+                as: "subscribers",
+            },
+        },
+        // count how many channal is subscribe to other channals
+        {
+            $lookup: {
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "subscriber",
+                as: "subscribedTo",
+            },
+        },
+        // adding new fileds
+        {
+            $addFields: {
+                subscribersCout: {
+                    $size: "$subscribers",
+                },
+                channalSubscribedToCount: {
+                    $size: "$subscribedTo",
+                },
+
+                isSubscribed: {
+                    $cond: {
+                        // the condition is if u subscriibed(looged In is required)
+                        // the find user id on the subs
+                        if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+                        then: true,
+                        else: false,
+                    },
+                },
+            },
+        },
+        {
+            $project: {
+                fullName: 1,
+                username: 1,
+                coverImage: 1,
+                avatar: 1,
+                email: 1,
+                subscribersCout: 1,
+                channalSubscribedToCount: 1,
+                isSubscribed: 1,
+            },
+        },
+    ]);
+    console.log(channal);
+
+    if (!channal.length) {
+        throw new ApiError(404, "Channal Doesn't Exists...");
+    }
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                channal[0],
+                "User Channal Fetched  Successfully"
+            )
+        );
+});
+
 export {
     registerUser,
     loginUser,
@@ -325,4 +406,5 @@ export {
     updateAccountDetails,
     updateUserAvatar,
     updateUserCoverImage,
+    getUSerChannalProfile,
 };
